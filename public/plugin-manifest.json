@@ -1,0 +1,34 @@
+{
+  "locale": [
+    "en"
+  ],
+  "service": "DESK",
+  "storage": false,
+  "type": "personal",
+  "whiteListedDomains": [],
+  "modules": {
+    "widgets": [
+      {
+        "location": "desk.ticket.detail.subtab",
+        "url": "/widget1.html",
+        "name": "Test Extension",
+        "logo": "/assets/logo.png",
+        "icon": "/assets/logo.png"
+      },
+      {
+        "location": "desk.extension.preference",
+        "url": "/widget2.html",
+        "name": "Preference",
+        "logo": "/assets/logo.png",
+        "icon": "/assets/logo.png"
+      }
+    ]
+  },
+  "cspDomains": {
+    "connect-src": []
+  },
+  "zohoAuthorisation": {},
+  "connectors": [],
+  "config": [],
+  "moduleSupport": false
+}
