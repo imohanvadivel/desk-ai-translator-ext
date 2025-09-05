@@ -133,3 +133,183 @@ export class DB {
         return await ZOHODESK.delete("database", payload);
     }
 }
+
+// Translation Utility
+export async function getThread(ticketId: string, threadId: string) {
+    const res = await ZOHODESK.request({
+        url: `https://desk.zoho.com/api/v1/tickets/${ticketId}/threads/${threadId}?include=plainText`,
+        method: "GET",
+        headers: {},
+        connectionLinkName: "desk",
+        responseType: "json",
+        data: {},
+    });
+
+    return res;
+}
+
+export let languageCodes = [
+    { label: "English", value: "en" },
+    { label: "Kannada", value: "kn" },
+    { label: "Tamil", value: "ta" },
+    { label: "Telugu", value: "te" },
+    { label: "Marathi", value: "mr" },
+    { label: "Arabic", value: "ar" },
+    { label: "Bengali", value: "bn" },
+    { label: "German", value: "de" },
+    { label: "French", value: "fr" },
+    { label: "Hindi", value: "hi" },
+    { label: "Italian", value: "it" },
+    { label: "Korean", value: "ko" },
+    { label: "Dutch", value: "nl" },
+    { label: "Polish", value: "pl" },
+    { label: "Portuguese", value: "pt" },
+    { label: "Russian", value: "ru" },
+    { label: "Thai", value: "th" },
+    { label: "Turkish", value: "tr" },
+    { label: "Vietnamese", value: "vi" },
+    { label: "Chinese (Simplified)", value: "zh" },
+    { label: "Chinese (Traditional)", value: "zh-Hant" },
+    { label: "Bulgarian", value: "bg" },
+    { label: "Czech", value: "cs" },
+    { label: "Danish", value: "da" },
+    { label: "Greek", value: "el" },
+    { label: "Finnish", value: "fi" },
+    { label: "Croatian", value: "hr" },
+    { label: "Hungarian", value: "hu" },
+    { label: "Indonesian", value: "id" },
+    { label: "Hebrew", value: "iw" },
+    { label: "Norwegian", value: "no" },
+    { label: "Romanian", value: "ro" },
+    { label: "Slovak", value: "sk" },
+    { label: "Slovenian", value: "sl" },
+    { label: "Swedish", value: "sv" },
+    { label: "Ukrainian", value: "uk" },
+];
+
+export async function detectLanguage(text: string) {
+    if ("LanguageDetector" in self) {
+        console.log("Language detector supported");
+    } else {
+        console.log("Language detector not supported");
+        return;
+    }
+
+    // @ts-ignore
+    const availability = await self.LanguageDetector.availability();
+    let detector;
+
+    function monitor(m: any) {
+        m.addEventListener("downloadprogress", (e: any) => {
+            console.log(`Downloading Language Detector Model ${Math.round((e.loaded / e.total) * 100)}%`);
+        });
+    }
+
+    console.log({ availability });
+
+    if (availability === "unavailable") {
+        // Model is not available
+        console.log("Language detect or is not available in your browser");
+        return;
+    }
+
+    if (availability === "available") {
+        // Model is available for use
+        // @ts-ignore
+        detector = await self.LanguageDetector.create();
+        // @ts-ignore
+        const result = await detector.detect(text);
+
+        if (result.length === 0) {
+            console.error(`language can't be detected`);
+            return;
+        }
+
+        return result[0];
+    } else {
+        // Model is available for download
+        // @ts-ignore
+        detector = await self.LanguageDetector.create({
+            monitor,
+        });
+
+        await detector.ready;
+
+        const result = await detector.detect(text);
+
+        if (result.length === 0) {
+            console.error(`language can't be detected`);
+            return;
+        }
+
+        return result[0];
+    }
+}
+
+export async function translate(sourceLanguage: string, targetLanguage: string, textToTranslate: string) {
+    if (!("Translator" in self)) {
+        console.log({ sourceLanguage, targetLanguage });
+        console.error("Translator not supported!!!");
+        return;
+    }
+
+    console.log({ sourceLanguage, targetLanguage, textToTranslate });
+
+    // @ts-ignore
+    const translatorCapabilities = await self.Translator.availability({
+        sourceLanguage,
+        targetLanguage,
+    });
+
+    function monitor(m: any) {
+        m.addEventListener("downloadprogress", (e: any) => {
+         
+            console.log(`Downloading Translator Model for ${sourceLanguage} to ${targetLanguage} pair ${Math.round(
+                (e.loaded / e.total) * 100
+            )}%`);
+        });
+    }
+
+    if (translatorCapabilities === "unavailable") {
+        console.log("Translator is not available in your browser");
+        return;
+    }
+
+    let translatedText = "";
+
+    if (translatorCapabilities === "available") {
+        // @ts-ignore
+        const translator = await self.Translator.create({
+            sourceLanguage,
+            targetLanguage,
+        });
+
+        try {
+            const stream = await translator.translateStreaming(textToTranslate);
+            for await (const chunk of stream) {
+                translatedText += chunk;
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        return translatedText;
+    } else {
+        // @ts-ignore
+        const translator = await self.Translator.create({
+            sourceLanguage,
+            targetLanguage,
+            monitor,
+        });
+
+        await translator.ready;
+        try {
+            const stream = await translator.translateStreaming(textToTranslate);
+            for await (const chunk of stream) {
+                translatedText += chunk;
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        return translatedText;
+    }
+}

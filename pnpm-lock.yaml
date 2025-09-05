@@ -25,8 +25,8 @@ importers:
         specifier: ^0.5.16
         version: 0.5.16
       desk-ext-types:
-        specifier: ^1.0.2
-        version: 1.0.2
+        specifier: ^1.0.3
+        version: 1.0.3
       svelte:
         specifier: ^4.2.18
         version: 4.2.19
@@ -553,8 +553,8 @@ packages:
   deprecation@2.3.1:
     resolution: {integrity: sha512-xmHIy4F3scKVwMsQ4WnVaS8bHOx0DmVwRywosKhaILI0ywMDWPtBSku2HNxRvF7jtwDRsoEwYQSfbxj8b7RlJQ==}
 
-  desk-ext-types@1.0.2:
-    resolution: {integrity: sha512-orbpKu2lCr6Kqc8XudQZJc8B2BMG/VWYopzQRxK4dztUVvBUuoKUrDZESoSkI6uH+lBABRp+gRZm+kwXsnO2Pw==}
+  desk-ext-types@1.0.3:
+    resolution: {integrity: sha512-ajDhnt2tjla0kzKNYC0yjCtVfNhL0bRxYQ4l1o2wHQieXImTKC19x5LGtE34hCHvw4m5poBhavIwENjgOXz+qw==}
 
   deskblocks@0.1.3:
     resolution: {integrity: sha512-pWqv3osGwj0GGYa3kuzsaivM69WX44oYIVL36GoJg69qAXgY/zFzUAlzhjPOHW51frKFYahtQlTkbzAdM6LtmQ==}
@@ -1373,7 +1373,7 @@ snapshots:
 
   deprecation@2.3.1: {}
 
-  desk-ext-types@1.0.2: {}
+  desk-ext-types@1.0.3: {}
 
   deskblocks@0.1.3(svelte@4.2.19):
     dependencies:
